@@ -6,7 +6,7 @@ const ReactionSchema = new Schema (
     { 
     reactionId: {
         type: Schema.Types.ObjectId,
-        default: () => new Types.ObjectId()
+       default: () => new Types.ObjectId()   //why need this why not default id?
     }, 
     reactionBody: {
         type: String, 
@@ -16,7 +16,8 @@ const ReactionSchema = new Schema (
     username: [ 
       
         { 
-            type: Schema.Types.ObjectId, 
+            required: true, 
+            type: Schema.Types.String, 
             ref: 'User'
         }
     ],  
@@ -50,7 +51,7 @@ const ThoughtSchema = new Schema(
         { 
             
             required: true, 
-            type: Schema.Types.ObjectId, 
+            type: Schema.Types.String, 
             ref: 'User'
         }
     ],

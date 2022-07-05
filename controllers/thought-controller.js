@@ -4,10 +4,10 @@ const ThoughtController = {
     // get all pizzas
     getAllThought(req, res) {
         Thought.find({})
-          .populate({
-            path: 'username',
-            select: '-__v'
-          })
+         // .populate({
+         //   path: 'username',   this is what broke it but why does archigas not have his break?
+          //  select: '-__v'
+         // })
           .select('-__v')
           .sort({ _id: -1 })
           .then(dbUserData => res.json(dbUserData))
@@ -20,10 +20,10 @@ const ThoughtController = {
         // get one pizza by id
 getthoughtById({ params }, res) {
     Thought.findOne({ _id: params.id })
-      .populate({
-        path: 'username',
-        select: '-__v'
-      })
+     // .populate({
+     //   path: 'username',
+     //   select: '-__v'
+    //  })
       .select('-__v')
       .then(dbUserData => {
         if (!dbUserData) {
@@ -38,12 +38,13 @@ getthoughtById({ params }, res) {
       });
   }, 
 
-    // createPizza
-createThought({ params, body }, res) {
+    // why does my thought not create only pushsto user??
+createThought({ body }, res) {
     Thought.create(body)
     .then(({ _id }) => {
         return User.findOneAndUpdate(
-          { _id: body.userId },
+   //       { _id: body.userId },  this line of code is breaking us 
+          { username: body.username },
           { $push: { thoughts: _id } },
           { new: true }
         );
@@ -90,7 +91,7 @@ deleteThought({ params }, res) {
 
   createReactions({ params, body }, res) {
     Thought.findOneAndUpdate(
-      { _id: params.reactionId },
+      { _id: params.id },
       { $push: { reactions: body } },
       { new: true, runValidators: true  }
     )
@@ -106,11 +107,16 @@ deleteThought({ params }, res) {
 
   deleteReactions({ params }, res) {
     Thought.findOneAndUpdate(
-      { _id: params.ThoughtId },
+      { _id: params.id },
       { $pull: { reactions: { reactionId: params.reactionId } } },
       { new: true }
     )
-      .then(dbUserData => res.json(dbUserData))
+      .then(dbUserData => {
+        if (!dbUserData) {
+            res.status(404).json({ message: 'No pizza found with this id!' });
+            return;
+          }
+          res.json(dbUserData)})
       .catch(err => res.json(err));
   }
     } 

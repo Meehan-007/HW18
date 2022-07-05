@@ -5,7 +5,8 @@ const UserController = {
     getAllUser(req, res) {
         User.find({})
           .populate({
-            path: 'thoughts',
+            path: 'thoughts',   // how to get both to run
+         //   path: 'friends',    // wehy does it create friend loops within friend loops
             select: '-__v'
           })
           .select('-__v')
@@ -74,11 +75,11 @@ deleteUser({ params }, res) {
 
  
     addFriend({ params}, res) {
-         User.findOneAndUpdate(
-            { _id: params.userId },
+         User.findOneAndUpdate(   
+            { _id: params.id },
             { $push: { friends: params.friendId } },
             { new: true }
-          )
+          ) 
         .then(dbUserData => {
           if (!dbUserData) {
             res.status(404).json({ message: 'im confused!' });
@@ -89,29 +90,15 @@ deleteUser({ params }, res) {
         .catch(err => res.json(err));
     },  
 
-    deleteFriend({ params }, res) {
-        
-        User.findOneAndDelete(
-            { _id: params.userId })
-          .then(deletedfriend => {
-            if (!deletedfriend) {
-              return res.status(404).json({ message: 'No comment with this id!' });
-            }
-            return User.findOneAndUpdate(
-              { _id: params.UserId },
-              { $pull: { friend: params.friendId } },
-              { new: true }
-            );
-          })
-          .then(dbUserData => {
-            if (!dbUserData) {
-              res.status(404).json({ message: 'No pizza found with this id!' });
-              return;
-            }
-            res.json(dbUserData);
-          })
-          .catch(err => res.json(err));
-      }
+    deleteFriend( { params }, res) {
+        User.findOneAndUpdate(
+            { _id: params.id },
+            { $pull: { friends: params.friendId }},
+            { new: true}
+        )
+        .then(dbUserData => res.json(dbUserData))
+        .catch(err => res.json(err));
+    }
     } 
 
 

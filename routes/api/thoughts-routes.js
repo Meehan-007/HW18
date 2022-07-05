@@ -7,7 +7,7 @@ router
   .route('/')
   .get(getAllThought)
   .post(createThought); 
-  
+
   // post needs uers id to link up 
   // path to get data to show in the routes put it there
   router
@@ -23,7 +23,7 @@ router
   .post(createReactions); 
 
   router
-  .route("/:id/reactionId")
+  .route("/:id/reactions/:reactionId")
   .delete(deleteReactions);
 
 module.exports = router;
