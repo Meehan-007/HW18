@@ -1,7 +1,7 @@
 const { Schema, model, Types } = require('mongoose'); 
 const dateFormat = require('../utils/dateFormat');
 
-
+// look into what types wre in pizza hunt 
 const UserSchema = new Schema(
   {
     username: {
@@ -14,7 +14,10 @@ const UserSchema = new Schema(
       type: String, 
       unique: true, 
       required: true,
-     // must match a valid email address
+      trim: true,
+      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'] 
+
+      // learn this syntax
     }, 
 
     thoughts: [
@@ -22,12 +25,18 @@ const UserSchema = new Schema(
             type: Schema.Types.ObjectId, 
             ref: 'Thought'
         }
-    ],
-    friends: [UserSchema]
+    ], 
+    friends: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    ]
+   // friends: [UserSchema] why doesnt this code work?? but works for replyschema on tohughts
   },
   {
     toJSON: {
-      virtuals: true,
+     virtuals: true,
       getters: true
     },
     id: false
